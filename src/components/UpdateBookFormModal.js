@@ -1,23 +1,22 @@
 import React, { Component } from 'react'
 import { Modal, Button, Form } from 'react-bootstrap'
 
-export class BookFormModal extends Component {
+export class UpdateBookFormModal extends Component {
     render() {
         return (
-
             <Modal show={this.props.show} onHide={this.props.handleClose}>
                 <Modal.Header closeButton>
                     <Modal.Title><p>Add Your Book</p></Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <Form
-                        onSubmit={this.props.addBook}
+                        onSubmit={this.props.updateBook}
                     >
-                        <Form.Control size="lg" type="text" placeholder="Book Title" name='addTitle' />
-                        <Form.Control size="lg" type="text" placeholder="Description" name='addDescription' />
-                        <Form.Control size="lg" type="text" placeholder="Image Link" name='addLink' />
-                        <Form.Control size="lg" type="text" placeholder="addStatus" name='addStatus' />
-                        <Form.Control size="lg" type="submit" value='Add Book' />
+                        <Form.Control size="lg" type="text" name='updateTitle' defaultValue={this.props.updateTitle} />
+                        <Form.Control size="lg" type="text" name='updateDescription' defaultValue={this.props.updateDescription} />
+                        <Form.Control size="lg" type="text" name='updateLink' defaultValue={this.props.updateLink} />
+                        <Form.Control size="lg" type="text" name='updateStatus' defaultValue={this.props.updateStatus} />
+                        <Form.Control size="lg" type="submit" value='Update Book' />
                     </Form>
                 </Modal.Body>
                 <Modal.Footer>
@@ -30,4 +29,4 @@ export class BookFormModal extends Component {
     }
 }
 
-export default BookFormModal
+export default UpdateBookFormModal
