@@ -2,6 +2,7 @@ import React from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Jumbotron from 'react-bootstrap/Jumbotron';
 import BookFormModal from './components/BookFormModal';
+import UpdateBookFormModal from './components/UpdateBookFormModal';
 import axios from 'axios';
 import { withAuth0 } from '@auth0/auth0-react';
 import { Card, Col, Container, Row, Button } from 'react-bootstrap';
@@ -14,6 +15,12 @@ class MyFavoriteBooks extends React.Component {
       bestBooks: [],
       show: false,
       showModal: false,
+      showUpdateModal: false,
+      updateTitle: '',
+      index: 0,
+      updateDescription: '',
+      updateLink: '',
+      updateStatus: '',
     }
   }
 
@@ -38,7 +45,8 @@ class MyFavoriteBooks extends React.Component {
 
   handleClose = () => {
     this.setState({
-      showModal: false
+      showModal: false,
+      showUpdateModal: false
     })
   }
 
@@ -46,11 +54,11 @@ class MyFavoriteBooks extends React.Component {
     event.preventDefault();
     const { user } = this.props.auth0;
 
-    let addTitle = event.target.addTitle.value;
-    let addDescription = event.target.addDescription.value;
-    let addLink = event.target.addLink.value;
-    let addStatus = event.target.addStatus;
-    let email = user.email
+    // let addTitle = event.target.addTitle.value;
+    // let addDescription = event.target.addDescription.value;
+    // let addLink = event.target.addLink.value;
+    // let addStatus = event.target.addStatus;
+    // let email = user.email
 
     const addBookForm = {
       addTitle: event.target.addTitle.value,
@@ -78,7 +86,34 @@ class MyFavoriteBooks extends React.Component {
     this.setState({
       bestBooks: bestBooks.data
     })
+  }
 
+  showUpdateForm = async (index) => {
+    await this.setState({
+      showUpdateModal: true,
+      index: index,
+      updateTitle: this.state.bestBooks[index].name,
+      updateDescription: this.state.bestBooks[index].description,
+      updateLink: this.state.bestBooks[index].img,
+      updateStatus: this.state.bestBooks[index].status,
+    })
+  }
+
+  updateBook = async (event) => {
+    event.preventDefault();
+
+    let updateBookObject = {
+      updateTitle: event.target.updateTitle.value,
+      updateDescription: event.target.updateDescription.value,
+      updateLink: event.target.updateLink.value,
+      updateStatus: event.target.updateStatus.value,
+      email: this.props.auth0.user.email,
+    }
+    let bestBooks = await axios.put(`${process.env.REACT_APP_BOOK_DATA}/updateBook/${this.state.index}`, updateBookObject)
+
+    this.setState({
+      bestBooks: bestBooks.data
+    })
   }
 
   render() {
@@ -96,7 +131,7 @@ class MyFavoriteBooks extends React.Component {
         {this.state.show &&
           this.state.bestBooks.map((book, index) => {
             return (
-              <Container>
+              <Container key={index}>
                 <Row>
                   <Col>
                     <Card style={{ width: '18rem' }}>
@@ -113,6 +148,9 @@ class MyFavoriteBooks extends React.Component {
                           Delete
                         </Button>
                       </Card.Body>
+                      <Button variant="primary" size="lg" onClick={() => this.showUpdateForm(index)} >
+                        Update Book
+                      </Button>
                     </Card>
                   </Col>
                 </Row>
@@ -120,7 +158,16 @@ class MyFavoriteBooks extends React.Component {
             )
           })
         }
-        <BookFormModal addBook={this.addBook} handleClose={this.handleClose} handleModal={this.handleModal} show={this.state.showModal} />
+        <BookFormModal addBook={this.addBook} handleClose={this.handleClose} show={this.state.showModal} />
+        <UpdateBookFormModal
+          updateBook={this.updateBook}
+          handleClose={this.handleClose}
+          show={this.state.showUpdateModal}
+          updateTitle={this.state.updateTitle}
+          updateDescription={this.state.updateDescription}
+          updateLink={this.state.updateLink}
+          updateStatus={this.state.updateStatus}
+        />
       </Jumbotron>
     )
   }
